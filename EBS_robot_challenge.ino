@@ -1,50 +1,44 @@
-
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
-#include <Servo.h> 
+#include <Servo.h>
 
-
-Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
-// Or, create it with a different I2C address (say for stacking)
-// Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61); 
-
-// Connect a stepper motor with 200 steps per revolution (1.8 degree)
-// to motor port #2 (M3 and M4)
-Adafruit_StepperMotor *myStepper = AFMS.getStepper(513, 2);
-
+#define PWM_READ_PIN 7
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+Adafruit_StepperMotor *myStepper = AFMS.getStepper(513, 2);  // to motor port #2 (M3 and M4)
 Servo myservo;
 
+
+unsigned long duration;
+
+int degree;
+int usec;
 void setup() {
-  Serial.begin(9600);           // set up Serial library at 9600 bps
-  Serial.println("MMMMotor party!");
-
+  pinMode(PWM_READ_PIN, INPUT);
+  Serial.begin(115200);
   AFMS.begin();  // create with the default frequency 1.6KHz
-  //AFMS.begin(1000);  // OR with a different frequency, say 1KHz
-  
-  // Attach a servo to pin #10
-  myservo.attach(10);
 
-  myStepper->setSpeed(20);  // 20 rpm   
+  myservo.attach(10);
+  myStepper->setSpeed(20);  // 20 rpm
 }
 
-int i;
+
 void loop() {
 
-for ( i=1000; i<1500; i++) {
-    myservo.writeMicroseconds(i);
-    delay(1);
-}
-for (i = 1500; i >= 1000; i -= 1) { // goes from 180 degrees to 0 degrees
-    myservo.writeMicroseconds(i);              // tell servo to go to position in variable 'pos'
-    delay(1);      
-}
+  duration = pulseIn(PWM_READ_PIN, HIGH);
+
+  //  Serial.println(duration);
+  //  delay(50);
 
 
-    myStepper->step(341, FORWARD, DOUBLE);
+  if (duration > 1500) {
+    myservo.writeMicroseconds(1500); // 985~2004 is 0~90 degree
+    delay(200);
+    myservo.writeMicroseconds(980);
     delay(1000);
+    myStepper->step(341, FORWARD, DOUBLE); //2052 step is 360 degree
     myStepper->release();
-    delay(3000);
-    
+  }
+
 
 }
