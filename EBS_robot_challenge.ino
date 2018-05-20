@@ -32,9 +32,9 @@ void loop() {
 
 
   if (duration > 1500) {
-    myservo.writeMicroseconds(1500); // 985~2004 is 0~90 degree
+    myservo.writeMicroseconds(980); // 985~2004 is 0~90 degree
     delay(200);
-    myservo.writeMicroseconds(980);
+    myservo.writeMicroseconds(1550);
     delay(1000);
     myStepper->step(341, FORWARD, DOUBLE); //2052 step is 360 degree
     myStepper->release();
